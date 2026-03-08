@@ -1,5 +1,6 @@
 node_modules/
-configs/
+configs/accounts.json
+configs/botConfig.json
 logs/
 *.lock
 start-bot.sh
