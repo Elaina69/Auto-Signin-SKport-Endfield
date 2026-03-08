@@ -1,0 +1,21 @@
+{
+  "name": "auto-signin-skport-endfield",
+  "version": "1.0.0",
+  "description": "Discord bot for automatic SKport Endfield daily check-in",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "keywords": [
+    "discord",
+    "bot",
+    "skport",
+    "endfield",
+    "auto-signin"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "discord.js": "^14.24.2"
+  }
+}

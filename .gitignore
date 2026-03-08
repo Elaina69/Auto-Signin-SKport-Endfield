@@ -1,0 +1,6 @@
+node_modules/
+configs/
+logs/
+*.lock
+start-bot.sh
+tmux.sh
