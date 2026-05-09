@@ -1,7 +1,7 @@
 export default {
     // index.js
     botOnline                       : "Bot online as: {tag}",
-    schedulerStarted                : "⏰ Check-in scheduler started (first run at {hour}:{minute} UTC, then every 6 hours)",
+    schedulerStarted                : "⏰ Check-in scheduler started (run at {hour}:{minute} UTC everyday and every {intervalHours} hours thereafter)",
     runningScheduledCheckin         : "⏰ Running scheduled check-in...",
     scheduledCheckinComplete        : "✅ Scheduled check-in completed for {count} user(s)",
     scheduledCheckinAllClaimed      : "👌 All accounts already checked in, skipping DMs",

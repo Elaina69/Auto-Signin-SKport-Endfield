@@ -1,0 +1,38 @@
+[
+    {
+        "id": "endfield_attendance_1", 
+        "name" : "Intermediate Combat Record" 
+    },
+    {
+        "id": "endfield_attendance_2", 
+        "name" : "Elementary Cognitive Carrier" 
+    },
+    {
+        "id": "endfield_attendance_3", 
+        "name" : "Advanced Combat Record" 
+    },
+    {
+        "id": "endfield_attendance_4", 
+        "name" : "Arms INSP Kit" 
+    },
+    {
+        "id": "endfield_attendance_5", 
+        "name" : "Arms INSP Set" 
+    },
+    {
+        "id": "endfield_attendance_6", 
+        "name" : "Protoprism" 
+    },
+    {
+        "id": "endfield_attendance_7", 
+        "name" : "Talosian Credit Notes|T-Creds" 
+    },
+    {
+        "id": "endfield_attendance_8", 
+        "name" : "Oroberyl" 
+    },
+    {
+        "id": "", 
+        "name" : "" 
+    }
+]

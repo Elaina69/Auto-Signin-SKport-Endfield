@@ -2,10 +2,10 @@
 import { Client, GatewayIntentBits, Events, Partials, ActivityType } from 'discord.js';
 // Import Utils
 import { configManager } from './utils/configManager.js';
-import { setupLockfile } from './utils/lockfile.js';
+import { lockfileManager } from './utils/lockfile.js';
 import { format } from './utils/formatLang.js';
 import { Logger } from './utils/logger.js';
-import { checkinAllUsers } from './utils/checkinManager.js';
+import { checkinManager } from './utils/checkinManager.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 // Import bot's events
@@ -30,7 +30,7 @@ const botConfig = await configManager.loadBotConfig();
 setBotConfig(botConfig);
 
 // Setup lockfile
-setupLockfile(botConfig.botId, __dirname, lang);
+lockfileManager.setup(botConfig.botId, __dirname, lang);
 
 // Create Discord client
 const client = new Client({
@@ -74,7 +74,6 @@ client.login(botConfig.token);
 
 /**
  * Start the auto check-in scheduler.
- * First run at the configured time, then every 6 hours.
  * Only sends DMs when there are new claims or errors (skips if already claimed).
  * @param {Client} client - Discord.js client.
  * @param {object} config - Bot configuration.
@@ -85,13 +84,16 @@ function startCheckinScheduler(client, config) {
     const targetMinute = schedule.minute ?? 5;
     const intervalHours = schedule.intervalHours ?? 6;
 
+    // Sync cache reset time with scheduled check-in time
+    checkinManager.setCacheResetTime(targetHour, targetMinute);
+
     const hour = String(targetHour).padStart(2, '0');
     const minute = String(targetMinute).padStart(2, '0');
 
-    console.log(format(lang.schedulerStarted, { hour, minute }));
-
     const intervalMs = intervalHours * 60 * 60 * 1000;
     let schedulerStarted = false;
+
+    console.log(format(lang.schedulerStarted, { hour, minute, intervalHours }));
 
     // Check every 60 seconds for the first run at the target time
     const initialCheck = setInterval(async () => {
@@ -121,7 +123,7 @@ function startCheckinScheduler(client, config) {
 async function runScheduledCheckin(client) {
     console.log(lang.runningScheduledCheckin);
     try {
-        await checkinAllUsers(client);
+        await checkinManager.checkinAllUsers(client);
     } catch (err) {
         console.error('Scheduled check-in error:', err);
     }

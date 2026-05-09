@@ -10,7 +10,7 @@ import {
 import { configManager } from '../../utils/configManager.js';
 import { format } from '../../utils/formatLang.js';
 import lang from '../../configs/lang.js';
-import { checkinUser, buildResultEmbed } from '../../utils/checkinManager.js';
+import { checkinManager } from '../../utils/checkinManager.js';
 
 // Store botConfig reference (set from index.js)
 let botConfig = null;
@@ -136,8 +136,8 @@ export async function handleAddAccountModal(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
     // Run check-in immediately for the new account
-    const results = await checkinUser(userId);
-    const embed = buildResultEmbed(results);
+    const results = await checkinManager.checkinUser(userId);
+    const embed = checkinManager.buildResultEmbed(results);
 
     const hasError = results.some(r => !r.success);
     const replyPayload = {

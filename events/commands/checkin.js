@@ -1,5 +1,5 @@
 import { configManager } from '../../utils/configManager.js';
-import { checkinUser, buildResultEmbed } from '../../utils/checkinManager.js';
+import { checkinManager } from '../../utils/checkinManager.js';
 import lang from '../../configs/lang.js';
 
 /**
@@ -22,10 +22,10 @@ export async function handleCheckinCommand(interaction) {
     await interaction.deferReply({ ephemeral: true });
 
     // Run check-in for all user accounts
-    const results = await checkinUser(userId);
+    const results = await checkinManager.checkinUser(userId);
 
     // Build and send result embed
-    const embed = buildResultEmbed(results);
+    const embed = checkinManager.buildResultEmbed(results);
 
     const hasError = results.some(r => !r.success);
     const replyPayload = { embeds: [embed] };
