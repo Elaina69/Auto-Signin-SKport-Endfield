@@ -11,10 +11,11 @@
 
 ## Overview
 
-This project supports two self-hosting modes:
+This project supports these self-hosting workflows:
 
-- **Host mode**: run the bot directly on the server with `tmux` + `pm2`.
-- **Docker mode**: run an Ubuntu/Node container, then start the bot inside the container with `pm2` through `docker exec`.
+- **Host mode**: run the bot directly on the machine with Node.js + PM2. This works on Linux and Windows.
+- **Linux helper script mode**: use the included `tmux` scripts to run host mode on a Linux server.
+- **Docker mode**: run an Ubuntu/Node container, then start the bot inside the container with `pm2` through `docker exec`. This workflow is Linux-focused; Windows Docker usage is not documented or verified yet.
 
 Runtime data is stored in the project folder:
 
@@ -29,20 +30,55 @@ Do not commit or share `configs/botConfig.json` or `configs/accounts.json`.
 
 Common:
 
-- Linux server
-- `tmux`
 - Git
+- Node.js 18+
+- npm
 
 Host mode:
 
-- Node.js 18+
-- npm
-- PM2 installed globally: `npm install -g pm2`
+- PM2 installed globally
 
-Docker mode:
+Linux helper scripts:
+
+- `tmux`
+
+Docker mode on Linux:
 
 - Docker
 - sudo/root permission for Docker commands
+
+### Install Requirements
+
+Ubuntu/Debian host mode:
+
+The example below installs Node.js 22 LTS. Any Node.js 18+ version supported by the dependencies should work.
+
+```bash
+sudo apt update
+sudo apt install -y git curl ca-certificates tmux
+curl -fsSL https://deb.nodesource.com/setup_22.x | sudo -E bash -
+sudo apt install -y nodejs
+sudo npm install -g pm2
+```
+
+Windows host mode, PowerShell:
+
+```powershell
+winget install --id Git.Git -e
+winget install --id OpenJS.NodeJS.LTS -e
+npm install -g pm2
+```
+
+Docker mode on Ubuntu/Debian:
+
+```bash
+sudo apt update
+sudo apt install -y git curl ca-certificates tmux docker.io
+sudo systemctl enable --now docker
+sudo docker --version
+```
+
+Docker mode still needs the project Docker image and container, which are created by `./_run\(docker\).sh`.
 
 ## Discord Bot Setup
 
@@ -59,6 +95,9 @@ The bot registers these global slash commands:
 - `/checkin`
 
 ## First-Time Config
+The bot can auto-create configs/botConfig.json when started interactively with `node index.js`.
+
+However, for PM2, Docker, tmux, or systemd hosting, create this file before starting the bot to avoid hidden prompts.
 
 Clone the project:
 
@@ -69,9 +108,18 @@ cd Auto-Signin-SKport-Endfield
 
 Create `configs/botConfig.json` before starting the bot with PM2. This is the safest option for both host mode and Docker mode:
 
+Linux/macOS:
+
 ```bash
 mkdir -p configs
 nano configs/botConfig.json
+```
+
+Windows PowerShell:
+
+```powershell
+New-Item -ItemType Directory -Force configs
+notepad .\configs\botConfig.json
 ```
 
 Use this shape:
@@ -109,7 +157,9 @@ After the config file is created, stop the interactive process with `Ctrl+C`. Do
 
 ## Host Mode
 
-Use this mode when Node.js and PM2 are installed directly on the server.
+Use this mode when Node.js and PM2 are installed directly on the machine.
+
+### Linux With Included Scripts
 
 ```bash
 chmod +x _*.sh
@@ -135,9 +185,28 @@ Detach from tmux without stopping the bot:
 Ctrl+B, then D
 ```
 
+### Windows With PM2
+
+The included `_run.sh` script depends on Bash and `tmux`, so it is intended for Linux servers. On Windows, run the bot directly with PM2:
+
+```powershell
+npm ci
+pm2 start index.js --name autosigninskport
+pm2 monit
+```
+
+Common Windows PM2 commands:
+
+```powershell
+pm2 status
+pm2 logs autosigninskport
+pm2 restart autosigninskport
+pm2 stop autosigninskport
+```
+
 ## Docker Mode
 
-Use this mode when you want the bot isolated in a Docker container.
+Use this mode when you want the bot isolated in a Docker container on Linux. Docker mode may work on Windows with Docker Desktop or WSL2, but it is not documented or verified yet.
 
 ```bash
 chmod +x _*.sh
@@ -176,9 +245,9 @@ sudo docker build --no-cache -t autosigninskport .
 ./_run\(docker\).sh
 ```
 
-## Optional Systemd
+## Optional Linux Systemd
 
-You can let the server run either mode on boot.
+You can let a Linux server run either mode on boot. Windows does not use systemd; use PM2 directly, Windows Task Scheduler, or another Windows service manager if you need automatic startup there.
 
 First, make the scripts executable:
 
