@@ -3,5 +3,4 @@ configs/accounts.json
 configs/botConfig.json
 logs/
 *.lock
-start-bot.sh
-tmux.sh
+Auto-Signin-SKport-Endfield.code-workspace
