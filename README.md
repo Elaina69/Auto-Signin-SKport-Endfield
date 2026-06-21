@@ -1,6 +1,13 @@
-# Auto Signin SKport Endfield
+<h1 align="center">
+    Auto Signin SKport Endfield
+</h1>
 
-Discord bot for automatic SKport Endfield daily check-in.
+<p align="center">
+    <img src="https://count.getloli.com/@Auto-Signin-SKport-Endfield?name=Auto-Signin-SKport-Endfield&theme=gelbooru&padding=7&offset=0&align=center&scale=1&pixelated=1&darkmode=auto" alt="moe counter" />
+    <p align="center"> Visitors (Since 2025/08/06) </p>
+    <br>
+    <p align="center">  </p>
+</p>
 
 ## Overview
 
