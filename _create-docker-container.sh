@@ -16,7 +16,15 @@ if ! docker image inspect "$IMAGE_NAME" >/dev/null 2>&1; then
     exit 1
 fi
 
-# 3. Recreate old containers that use a different command.
+# 3. Recreate containers whose project bind mount still points at the old disk path.
+EXISTING_PROJECT_MOUNT="$(docker inspect -f "{{range .Mounts}}{{if eq .Destination \"$CONTAINER_WORKDIR\"}}{{.Source}}{{end}}{{end}}" "$CONTAINER_NAME" 2>/dev/null || true)"
+if docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1 && [ "$EXISTING_PROJECT_MOUNT" != "$PROJECT_DIR" ]; then
+    echo "[DOCKER] Container '$CONTAINER_NAME' uses project mount '$EXISTING_PROJECT_MOUNT' instead of '$PROJECT_DIR'."
+    echo "[DOCKER] Removing the old container so it can be recreated with the current path..."
+    docker rm -f "$CONTAINER_NAME"
+fi
+
+# 4. Recreate old containers that use a different command.
 EXISTING_COMMAND="$(docker inspect -f '{{json .Config.Cmd}}' "$CONTAINER_NAME" 2>/dev/null || true)"
 if [ -n "$EXISTING_COMMAND" ] && [ "$EXISTING_COMMAND" != "$IDLE_COMMAND_JSON" ]; then
     echo "[DOCKER] Container '$CONTAINER_NAME' is using an old command: $EXISTING_COMMAND"
@@ -24,7 +32,7 @@ if [ -n "$EXISTING_COMMAND" ] && [ "$EXISTING_COMMAND" != "$IDLE_COMMAND_JSON" ]
     docker rm -f "$CONTAINER_NAME"
 fi
 
-# 4. Recreate the container if it was created from an older image.
+# 5. Recreate the container if it was created from an older image.
 CURRENT_IMAGE_ID="$(docker image inspect -f '{{.Id}}' "$IMAGE_NAME")"
 EXISTING_IMAGE_ID="$(docker inspect -f '{{.Image}}' "$CONTAINER_NAME" 2>/dev/null || true)"
 if [ -n "$EXISTING_IMAGE_ID" ] && [ "$EXISTING_IMAGE_ID" != "$CURRENT_IMAGE_ID" ]; then
@@ -33,13 +41,13 @@ if [ -n "$EXISTING_IMAGE_ID" ] && [ "$EXISTING_IMAGE_ID" != "$CURRENT_IMAGE_ID" 
     docker rm -f "$CONTAINER_NAME"
 fi
 
-# 5. Skip creation if the container already exists.
+# 6. Skip creation if the container already exists.
 if docker container inspect "$CONTAINER_NAME" >/dev/null 2>&1; then
     echo "[DOCKER] Container '$CONTAINER_NAME' already exists."
     exit 0
 fi
 
-# 6. Create the container without starting it.
+# 7. Create the container without starting it.
 # Bind mount the project so configs/logs stay outside the container.
 # Use a named node_modules volume so container dependencies are isolated from the host.
 echo "[DOCKER] Creating container '$CONTAINER_NAME'..."
